@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "D:\\Inflearn\\source\\GameCoding\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{9FB6A690-9504-4FC6-BDB4-845983303F5A}|GameCoding\\GameCoding.vcxproj|D:\\Inflearn\\source\\GameCoding\\GameCoding\\GameCoding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{9FB6A690-9504-4FC6-BDB4-845983303F5A}|GameCoding\\GameCoding.vcxproj|solutionrelative:GameCoding\\GameCoding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{9FB6A690-9504-4FC6-BDB4-845983303F5A}|GameCoding\\GameCoding.vcxproj|D:\\Inflearn\\source\\GameCoding\\GameCoding\\Notepad.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{9FB6A690-9504-4FC6-BDB4-845983303F5A}|GameCoding\\GameCoding.vcxproj|solutionrelative:GameCoding\\Notepad.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9FB6A690-9504-4FC6-BDB4-845983303F5A}|GameCoding\\GameCoding.vcxproj|D:\\Inflearn\\source\\GameCoding\\GameCoding\\GameCoding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{9FB6A690-9504-4FC6-BDB4-845983303F5A}|GameCoding\\GameCoding.vcxproj|solutionrelative:GameCoding\\GameCoding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -28,17 +28,17 @@
         },
         {
           "DockedWidth": 258,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "GameCoding.cpp",
               "DocumentMoniker": "D:\\Inflearn\\source\\GameCoding\\GameCoding\\GameCoding.cpp",
               "RelativeDocumentMoniker": "GameCoding\\GameCoding.cpp",
               "ToolTip": "D:\\Inflearn\\source\\GameCoding\\GameCoding\\GameCoding.cpp",
               "RelativeToolTip": "GameCoding\\GameCoding.cpp",
-              "ViewState": "AgIAADYAAAAAAAAAAAAAAEsAAAADAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2024-12-29T12:57:41.02Z",
               "IsPinned": true,
@@ -46,15 +46,16 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
               "Title": "Notepad.cpp",
               "DocumentMoniker": "D:\\Inflearn\\source\\GameCoding\\GameCoding\\Notepad.cpp",
               "RelativeDocumentMoniker": "GameCoding\\Notepad.cpp",
               "ToolTip": "D:\\Inflearn\\source\\GameCoding\\GameCoding\\Notepad.cpp",
               "RelativeToolTip": "GameCoding\\Notepad.cpp",
-              "ViewState": "AgIAAFAAAAAAAAAAAAA0wE8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAAAHAAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-01-04T13:29:33.047Z"
+              "WhenOpened": "2025-01-04T13:29:33.047Z",
+              "EditorCaption": ""
             }
           ]
         }

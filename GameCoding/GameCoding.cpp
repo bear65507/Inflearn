@@ -1,83 +1,27 @@
 ﻿#include <iostream>
 using namespace std;
 
-class Player
+class UserManager
 {
 public:
-	Player()
+	static UserManager* GetInstance()
 	{
-		cout << "Player()" << endl;
+		static UserManager um;
+		return &um;
 	}
 
-	~Player()
-	{
-		cout << "~Player()" << endl;
-	}
+public:
+	void AddUser() { _userCount++; }
+	int GetUserCount() { return _userCount; }
+private:
+	int _userCount = 0;
 };
 
-class Inventory
-{
-public:
-	Inventory() : _a(10)
-	{
-		cout << "Inventory()" << endl;
-	}
-	Inventory(int a)
-	{
-		_a = a;
-		cout << "Inventory(int)" << endl;
-	}
-	~Inventory()
-	{
-		cout << "~Inventory()" << endl;
-	}
-public:
-	int _a;
-};
-
-class Knight : public Player
-{
-public:
-	Knight() : _hp(0)
-	/*
-	* 선처리 영역
-	*/
-	{
-		_hp = 0;
-		cout << "Knight()" << endl;
-	}
-
-	~Knight()
-	{
-		cout << "~Knight()" << endl;
-	}
-
-public:
-	int _hp = 0;
-
-	int& _hpRef = _hp;
-	const int _hpconst = _hp;;
-};
+#define GET_MANAGER (UserManager::GetInstance())
 
 int main()
 {
-	for (int i = 0; i < 4; i++)
-	{
-		Knight k1;
-		cout << k1._hp << endl;
-	}
+	GET_MANAGER->AddUser();
+	cout << UserManager::GetInstance()->GetUserCount() << endl;
 
-		Knight k2;
-		for (int i = 0; i < 4; i++)
-		{
-			cout << k2._hp << endl;
-		}
-
-		{
-			Knight k3;
-			for (int i = 0; i < 4; i++)
-			{
-				cout << k3._hp << endl;
-			}
-		}
 }
