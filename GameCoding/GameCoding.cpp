@@ -1,27 +1,38 @@
 ﻿#include <iostream>
 using namespace std;
 
-class UserManager
+class Node
 {
 public:
-	static UserManager* GetInstance()
-	{
-		static UserManager um;
-		return &um;
-	}
+	Node(int data) : data(data) { }
 
 public:
-	void AddUser() { _userCount++; }
-	int GetUserCount() { return _userCount; }
-private:
-	int _userCount = 0;
+	int data;
+	Node* prev = nullptr;
+	Node* next = nullptr;
 };
-
-#define GET_MANAGER (UserManager::GetInstance())
 
 int main()
 {
-	GET_MANAGER->AddUser();
-	cout << UserManager::GetInstance()->GetUserCount() << endl;
+	Node* n1 = new Node(1);
+	Node* n2 = new Node(2);
+	Node* n3 = new Node(3);
+	Node* n4 = new Node(4);
+	Node* n5 = new Node(5);
+
+	n1->next = n2;
+	n2->prev = n1;
+
+	n2->next = n3;
+	n3->prev = n2;
+
+	n3->next = n4;
+	n4->prev = n3;
+
+	n4->next = n5;
+	n5->prev = n4;
+
+	Node* head = n1;
+	Node* tail = n5;
 
 }
