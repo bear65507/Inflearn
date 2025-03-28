@@ -7,8 +7,8 @@
       "RelativeMoniker": "D:0:0:{9FB6A690-9504-4FC6-BDB4-845983303F5A}|GameCoding\\GameCoding.vcxproj|solutionrelative:GameCoding\\Notepad.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|D:\\Inflearn\\source\\GameCoding\\MazeProject\\MazeProject.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|solutionrelative:MazeProject\\MazeProject.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|D:\\Inflearn\\source\\GameCoding\\MazeProject\\Array.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|solutionrelative:MazeProject\\Array.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|D:\\Inflearn\\source\\GameCoding\\MazeProject\\List.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -19,8 +19,12 @@
       "RelativeMoniker": "D:0:0:{9FB6A690-9504-4FC6-BDB4-845983303F5A}|GameCoding\\GameCoding.vcxproj|solutionrelative:GameCoding\\GameCoding.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|D:\\Inflearn\\source\\GameCoding\\MazeProject\\List.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|solutionrelative:MazeProject\\List.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|D:\\Inflearn\\source\\GameCoding\\MazeProject\\Vector.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|solutionrelative:MazeProject\\Vector.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|D:\\Inflearn\\source\\GameCoding\\MazeProject\\MazeProject.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{6B69D126-B96F-4054-9A02-FBAFB0A0B5BA}|MazeProject\\MazeProject.vcxproj|solutionrelative:MazeProject\\MazeProject.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 184,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -39,14 +43,27 @@
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "List.cpp",
-              "DocumentMoniker": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\List.cpp",
-              "RelativeDocumentMoniker": "MazeProject\\List.cpp",
-              "ToolTip": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\List.cpp",
-              "RelativeToolTip": "MazeProject\\List.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-03-27T14:17:06.286Z",
+              "Title": "Vector.h",
+              "DocumentMoniker": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\Vector.h",
+              "RelativeDocumentMoniker": "MazeProject\\Vector.h",
+              "ToolTip": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\Vector.h",
+              "RelativeToolTip": "MazeProject\\Vector.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-03-28T13:34:05.037Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Array.h",
+              "DocumentMoniker": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\Array.h",
+              "RelativeDocumentMoniker": "MazeProject\\Array.h",
+              "ToolTip": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\Array.h",
+              "RelativeToolTip": "MazeProject\\Array.h",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-03-28T13:21:45.161Z",
               "EditorCaption": ""
             },
             {
@@ -57,20 +74,20 @@
               "RelativeDocumentMoniker": "MazeProject\\List.h",
               "ToolTip": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\List.h",
               "RelativeToolTip": "MazeProject\\List.h",
-              "ViewState": "AgIAAFEAAAAAAAAAAAAAAGUAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEUAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-03-27T14:16:56.427Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 5,
               "Title": "MazeProject.cpp",
               "DocumentMoniker": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\MazeProject.cpp",
               "RelativeDocumentMoniker": "MazeProject\\MazeProject.cpp",
               "ToolTip": "D:\\Inflearn\\source\\GameCoding\\MazeProject\\MazeProject.cpp",
               "RelativeToolTip": "MazeProject\\MazeProject.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAA5AAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-27T14:15:45.24Z",
               "EditorCaption": ""
@@ -96,7 +113,7 @@
               "RelativeDocumentMoniker": "GameCoding\\Notepad.cpp",
               "ToolTip": "D:\\Inflearn\\source\\GameCoding\\GameCoding\\Notepad.cpp",
               "RelativeToolTip": "GameCoding\\Notepad.cpp",
-              "ViewState": "AgIAAK0AAAAAAAAAAAAAAMQAAAAqAAAAAAAAAA==",
+              "ViewState": "AgIAALYAAAAAAAAAAAAAAL0AAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2025-03-26T14:12:41.41Z",
               "EditorCaption": ""

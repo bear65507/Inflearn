@@ -1,20 +1,17 @@
 ﻿#include <iostream>
-#include "List.h"
+#include "Array.h"
+#include "Vector.h"
 
 int main()
 {
-	List li;
+	
+	Vector v;
 
-	li.AddAtTail(1); // 뒤에서부터 데이터 밀어넣음
-	Node* node = li.AddAtTail(2); // 노드 위치 기억
-	li.AddAtTail(3);
+	v.push_back(1);
+	v.push_back(2);
+	v.push_back(3);
 
-	li.Print();
-
-	Node* node = li.GetNode(1); // 속도의 이점을 못 살림 (하나하나 찾기 때문)
-	li.Remove(node);
-
-	li.Print();
+	int a = v[1];
 
 	return 0;
 }
