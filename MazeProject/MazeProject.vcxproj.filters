@@ -8,6 +8,9 @@
     <Filter Include="DataStructure">
       <UniqueIdentifier>{644a6145-36e5-4bc1-ba0c-f520ae65c984}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Borad">
+      <UniqueIdentifier>{750d68eb-79ee-4ac1-9f3c-346f055358df}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MazeProject.cpp">
@@ -22,6 +25,18 @@
     <ClCompile Include="Vector.cpp">
       <Filter>DataStructure</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="Board.cpp">
+      <Filter>Borad</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleHelper.cpp">
+      <Filter>Borad</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Borad</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="List.h">
@@ -32,6 +47,21 @@
     </ClInclude>
     <ClInclude Include="Vector.h">
       <Filter>DataStructure</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="Board.h">
+      <Filter>Borad</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleHelper.h">
+      <Filter>Borad</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Borad</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
