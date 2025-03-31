@@ -3,7 +3,7 @@
 
 class Vector // 동적배열
 {
-	using T = int;
+	using T = Pos;
 
 public: 
 	explicit Vector() // explicit : 외부함수에서 호출시 통과되는 것을 방지

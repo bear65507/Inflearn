@@ -13,16 +13,18 @@ enum class TileType
 	WALL
 };
 
+class Player; // 전방선언 - 헤더끼리는 어지간해선 추가 X
+
 class Board
 {
 public:
 	Board();
 	~Board();
 
-	void Init(int32 size); // 초기화
-	void Render();
+	void Init(int32 size, class Player* player); // 초기화 - 로직실행
+	void Render(); // 맵을 그려줌
 
-	void GenerateMap(); 
+	void GenerateMap(); // 맵 생성 로직
 	TileType GetTileType(Pos pos);
 	ConsoleColor GetTileColor(Pos pos);
 
@@ -32,6 +34,7 @@ public:
 private:
 	TileType		_tile[BOARD_MAX_SIZE][BOARD_MAX_SIZE]; // 최대 맵 크기
 	int32		_size = 0; // 실제로 사용할 맵 크기
+	Player*		_player = nullptr;
 };
 
 	
