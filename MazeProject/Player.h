@@ -27,8 +27,8 @@ private:
 	Board*	_board = nullptr;
 
 	// 동적 배열
-	Vector	_path;  
-	int32	_pathIndex; // 베열의 인덱스
-	uint64	_sumTick = 0;
+	Vector<Pos>	_path;  
+	int32		_pathIndex; // 베열의 인덱스
+	uint64		_sumTick = 0;
 };
 

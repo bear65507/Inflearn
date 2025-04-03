@@ -2,10 +2,11 @@
 #include <iostream>
 using namespace std;
 
+template<typename T>
 class Node
 {
 	//typedef int T; // 별칭 사용 (T = int)
-	using T = int; // typedef의 요즘 문법
+	//using T = int; // typedef의 요즘 문법
 public:
 	Node(int data) : data(data), prev(nullptr), next(nullptr) { }
 public:
@@ -14,23 +15,24 @@ public:
 	Node* next;
 };
 
+template<typename T>
 class List
 {
 public:
 	List()
 	{
-		_head = new Node(0); // 더미 노드 생성
-		_tail = new Node(0);
+		_head = new Node<T>(0); // 더미 노드 생성
+		_tail = new Node<T>(0);
 		_head->next = _tail;
 		_tail->prev = _head;
 	}
 
 	~List()
 	{
-		Node* node = _head;
+		Node<T>* node = _head;
 		while (node != nullptr) // 노드들 삭제
 		{
-			Node* deleteNode = node;
+			Node<T>* deleteNode = node;
 
 			//Node* nextNode = node->next;
 			//node = nextNode; // 밑 코드와 동일
@@ -39,9 +41,9 @@ public:
 		}
 	}
 
-	Node* GetNode(int index)
+	Node<T>* GetNode(int index)
 	{
-		Node* node = _head->next;
+		Node<T>* node = _head->next;
 		if (node == _tail)
 			return nullptr;
 
@@ -58,7 +60,7 @@ public:
 
 	void Print()
 	{
-		Node* node = _head->next; // _head = 더미이므로 넘김
+		Node<T>* node = _head->next; // _head = 더미이므로 넘김
 		while (node != _tail)
 		{
 			cout << node->data << " ";
@@ -70,10 +72,10 @@ public:
 	//		[node]
 	// [dummy]<->[nextNode]    <-> [dummy]
 	// [head]					[tail]
-	Node* AddAtHead(int data) 
+	Node<T>* AddAtHead(int data)
 	{
-		Node* node = new Node(data);
-		Node* nextNode = _head->next;
+		Node<T>* node = new Node<T>(data);
+		Node<T>* nextNode = _head->next;
 
 		node->next = nextNode;
 		nextNode->prev = node;
@@ -86,10 +88,10 @@ public:
 	//							[node]
 	// [dummy]<->			[prevNode]<->[dummy]
 	// [head]						[tail]
-	Node* AddAtTail(int data)
+	Node<T>* AddAtTail(int data)
 	{
-		Node* node = new Node(data);
-		Node* prevNode = _tail->prev;
+		Node<T>* node = new Node<T>(data);
+		Node<T>* prevNode = _tail->prev;
 
 		prevNode->next = node;
 		node->prev = prevNode;
@@ -104,10 +106,10 @@ public:
 //					[node]
 // [dummy]<->[prevNode]<->[posNode]<->[3]<->[dummy]
 // [head]								[tail]
-	void Insert(Node* posNode, int data)
+	void Insert(Node<T>* posNode, int data)
 	{
-		Node* node = new Node(data);
-		Node* prevNode = posNode->prev;
+		Node<T>* node = new Node<T>(data);
+		Node<T>* prevNode = posNode->prev;
 
 		prevNode->next = node; // prevNode와 posNode 사이에 노드 추가
 		node->prev = prevNode;
@@ -117,10 +119,10 @@ public:
 
 // [dummy]<->[prevNode]<->[node]<->[nextNode]<->[3]<->[dummy]
 // [head]										[tail]
-	Node* Remove(Node* node)
+	Node<T>* Remove(Node<T>* node)
 	{
-		Node* prevNode = node->prev;
-		Node* nextNode = node->next; // prevNode 와 nextNode 사이의 노드 삭제 (밀어줌)
+		Node<T>* prevNode = node->prev;
+		Node<T>* nextNode = node->next; // prevNode 와 nextNode 사이의 노드 삭제 (밀어줌)
 		prevNode->next = nextNode;
 		nextNode->prev = prevNode;
 
@@ -130,7 +132,7 @@ public:
 	}
 
 private:
-	Node* _head = nullptr;
-	Node* _tail = nullptr;
+	Node<T>* _head = nullptr;
+	Node<T>* _tail = nullptr;
 };
 

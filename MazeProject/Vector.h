@@ -1,10 +1,9 @@
 #pragma once
 #include <assert.h>
 
+template<typename T>
 class Vector // 동적배열
 {
-	using T = Pos;
-
 public: 
 	explicit Vector() // explicit : 외부함수에서 호출시 통과되는 것을 방지
 	{
@@ -55,6 +54,12 @@ public:
 	T& back() // 맨 뒤 데이터
 	{
 		return _buffer[_size - 1];
+	}
+
+	void resize(int size) // 특정 사이즈만큼이 되게끔 크기를 강제 설정
+	{
+		reserve(size);
+		_size = size;
 	}
 
 	void reserve(int capacity) // 캐퍼시티 증설
