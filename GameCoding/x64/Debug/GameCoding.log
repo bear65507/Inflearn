@@ -1,2 +1,6 @@
 ﻿  GameCoding.cpp
+D:\Inflearn\source\GameCoding\GameCoding\GameCoding.cpp(72,11): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+D:\Inflearn\source\GameCoding\GameCoding\GameCoding.cpp(85,11): warning C4267: '초기화 중': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Notepad.cpp
+  코드를 생성하고 있습니다...
   GameCoding.vcxproj -> D:\Inflearn\source\GameCoding\x64\Debug\GameCoding.exe
