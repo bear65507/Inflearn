@@ -2,136 +2,97 @@
 #include <vector>
 using namespace std;
 
-void CreateGraph_1() // 직관적이긴 하지만 잘 사용하지 않는 방법
-{
-	struct Vertex
-	{
-		// int data;
-		vector<Vertex*> edges;
-	};
+// DFS (Depth First Search) == 시작점으로 기준으로 얼마나 깊이 들어가는가
+// DFS = 재귀함수, 트리와 다르게 양방향으로 이동할 수 있음을 고려 = 또는 스택으로 구현
+// 
 
-	vector<Vertex> v(6); // 6개의 영역 확보
+struct Vertex
+{
+	// int data;
+};
+
+vector<Vertex> vertices;
+vector<vector<int>> adjacent;
+
+// 내가 방문한 목록
+vector<bool> visited;
+
+void CreateGraph()
+{
+	vertices.resize(6);
+
+	
+	// 인접 리스트
 	/*
-	// resize와 reverse 차이
-	v.resize(6); // size와 연관 (push_back을 6번한 것과 동일)
-	v.reserve(6); // capacity와 연관 (아직 데이터는 없지만 영역을 확보)
-	*/
-
-	// 0번에서 1번과 3번을 연결
-	v[0].edges.push_back(&v[1]);
-	v[0].edges.push_back(&v[3]);
-
-	v[1].edges.push_back(&v[0]);
-	v[1].edges.push_back(&v[2]);
-	v[1].edges.push_back(&v[3]);
-
-	v[3].edges.push_back(&v[4]);
-	v[5].edges.push_back(&v[4]);
-
-	// 0번과 3번이 연결되어 있는지 확인
-	bool connected = false;
-	int size = v[0].edges.size();
-	for (int i = 0; i < size; i++)
-	{
-		Vertex* vertex = v[0].edges[i];
-		if (vertex == &v[3])
-		{
-			connected = true;
-		}
-	}
-
-}
-
-
-void CreateGraph_2() // 인접 리스트를 활용 : 실제 연결된 애들'만' 넣어준다
-{
-	struct Vertex
-	{
-		int data;
-	};
-
-	vector<Vertex> v(6);
-
-	vector<vector<int>> adjacent; // 이중 벡터, 각 정점의 연결 관계를 한 행에 넣어서 관리
-	adjacent.resize(6); // 6개의 행 벡터 생성
-
-	// 연결된 애들만 push_back
-	adjacent[0] = { 1, 3 }; // 0번에서 1번과 3번을 연결 (초기값 설정)
-	adjacent[1] = { 0, 2, 3 }; 
+	adjacent = vector<vector<int>>(6);
+	adjacent[0] = { 1, 3 };
+	adjacent[1] = { 0, 2, 3 };
 	adjacent[3] = { 4 };
 	adjacent[5] = { 4 };
+	*/
 
-	// 0번에서 3번이 연결되어 있는지 확인
-	bool connected = false;
+	// 인접 행렬
+	adjacent = vector<vector<int>>
+	{
+		{0, 1, 0, 1, 0, 0},
+		{1, 0, 1, 1, 0, 0},
+		{0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 1, 0},
+		{0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 1, 0}
+	};
+}
 
-	int size = adjacent[0].size();
+void Dfs(int here) // here == 시작점
+{
+	// 방문 도장 찍기
+	visited[here] = true;
+	cout << "Visited : " << here << endl;
+
+	/* 인접한 길을 다 체크해서 <인접 리스트 버전> 
+	* 시간복잡도는 O(V+E) [V는 정점, E는 간선 개수]
+	* (정점마다 한번씩 호출 V) + (간선의 총 개수 E개)) == V+E
+	const int size = adjacent[here].size();
 	for (int i = 0; i < size; i++)
 	{
-		int vertex = adjacent[0][i];
-		if (vertex == 3)
-		{
-			connected = true;
-		}
+		int there = adjacent[here][i];
+		if (visited[there] == false) // 방문하지 않은 곳만 DFS
+			Dfs(there); 
+	}
+	*/
+
+	// <인접 행렬 버전> 알고리즘은 같으나 표현 방법만 달라짐
+	// 정점 개수가 V일 때, 시간복잡도는 O(V**2)
+	// (정점마다 V번 Dfs()함수 호출) * (for문을 V번 만큼 순회) == V**2
+	for (int there = 0; there < 6; there++)
+	{
+		// 길은 있는지
+		if (adjacent[here][there] == 0)
+			continue;
+
+		// 아직 방문하지 않은 곳에 한해서 방문
+		if (visited[there] == false)
+			Dfs(there);
 	}
 }
 
-// 만약 정점이 100개라면?
-// - 지하철 노선도 -> 서로 드문 드문 연결 -> 인접 리스트
-// - 페이스북 친구 -> 서로 빽빽하게 연결 -> 인접 행렬
-// 인접리스트 == 연결리스트와 비슷 / 인접 행렬 == 벡터와 비슷
-
-// 인접 행렬
-void CreateGraph_3()
+void DfsAll() // 모든 정점들을 다 순회
 {
-	struct Vertex
-	{
-		int data;
-	};
+	visited = vector<bool>(6, false);
 
-	vector<Vertex> v(6);
-
-	// 연결된 목록을 행렬로 관리 
-	// [X][O][X][O][X][X]
-	// [O][X][O][O][X][X]
-	// [X][X][X][X][X][X]
-	// [X][X][X][X][O][X]
-	// [X][X][X][X][X][X]
-	// [X][X][X][X][O][X]
-
-	// 6행 6열의 기본값이 false인 행렬 생성
-	vector<vector<bool>> adjacent(6, vector<bool>(6, false));
-
-	// adjacent[from][to] 
-	// 행렬을 이용한 그래프 표현
-	// 메모리 소모가 심하지만, 빠른 접근
-	adjacent[0][1] = true; // 서로 연결된 애는 true로 변경
-	adjacent[0][3] = true;
-	adjacent[1][0] = true;
-	adjacent[1][2] = true;
-	adjacent[1][3] = true;
-	adjacent[3][4] = true;
-	adjacent[5][4] = true;
-
-	// 0번과 3번이 연결되어 있는지 확인
-	bool connected = adjacent[0][3];
-
-	// 가중치 그래프 응용
-	vector<vector<int>> abjacent2 =
-	{
-		{-1, 15, -1, 35, -1, -1},
-		{15, -1, 5, 10, -1, -1},
-		{-1, 5, -1, -1, -1, -1},
-		{35, 10, -1, -1, 5, -1},
-		{-1, -1, -1, 5, -1, 5},
-		{-1, -1, -1, -1, 5, -1}
-	};
-	// -1은 끊김, 양수는 연결되어 있고 가중치 표현
+	for (int i = 0; i < 6; i++)
+		if (visited[i] == false)
+			Dfs(i);
 }
-// 그래프는 순회가 까다로움, 다음 정점으로 넘어가는 정교한 규칙이 필요
-// -> BFS, DFS
 
 int main()
 {
+	CreateGraph();
 	
+	//visited = vector<bool>(6, false);
+	//Dfs(0);
+
+	DfsAll();
+
 	return 0;
 }
