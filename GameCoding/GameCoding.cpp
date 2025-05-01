@@ -2,97 +2,136 @@
 #include <vector>
 using namespace std;
 
-template<typename T, typename Predicate = less<T>>
-class PriorityQueue
+void CreateGraph_1() // 직관적이긴 하지만 잘 사용하지 않는 방법
 {
-public:
-	// O(log N)
-	void push(const T& data)
+	struct Vertex
 	{
-		// 우선 힙 구조부터 맞춰 준다.
-		_heap.push_back(data);
+		// int data;
+		vector<Vertex*> edges;
+	};
 
-		// 도장깨기 시작
-		int now = static_cast<int>(_heap.size()) - 1;
+	vector<Vertex> v(6); // 6개의 영역 확보
+	/*
+	// resize와 reverse 차이
+	v.resize(6); // size와 연관 (push_back을 6번한 것과 동일)
+	v.reserve(6); // capacity와 연관 (아직 데이터는 없지만 영역을 확보)
+	*/
 
-		// 루트 노드까지
-		while (now > 0)
+	// 0번에서 1번과 3번을 연결
+	v[0].edges.push_back(&v[1]);
+	v[0].edges.push_back(&v[3]);
+
+	v[1].edges.push_back(&v[0]);
+	v[1].edges.push_back(&v[2]);
+	v[1].edges.push_back(&v[3]);
+
+	v[3].edges.push_back(&v[4]);
+	v[5].edges.push_back(&v[4]);
+
+	// 0번과 3번이 연결되어 있는지 확인
+	bool connected = false;
+	int size = v[0].edges.size();
+	for (int i = 0; i < size; i++)
+	{
+		Vertex* vertex = v[0].edges[i];
+		if (vertex == &v[3])
 		{
-			// 부모 노드와 비교해서 더 작으면 패배
-			int next = (now - 1) / 2;
-			if (_heap[now] < _heap[next])
-				break;
-
-
-			// 데이터 교체
-			::swap(_heap[now], _heap[next]);
-			now = next;
+			connected = true;
 		}
 	}
 
-	// O(log N)
-	void pop()
+}
+
+
+void CreateGraph_2() // 인접 리스트를 활용 : 실제 연결된 애들'만' 넣어준다
+{
+	struct Vertex
 	{
-		_heap[0] = _heap.back();
-		_heap.pop_back();
+		int data;
+	};
 
-		int now = 0;
+	vector<Vertex> v(6);
 
-		while (true)
+	vector<vector<int>> adjacent; // 이중 벡터, 각 정점의 연결 관계를 한 행에 넣어서 관리
+	adjacent.resize(6); // 6개의 행 벡터 생성
+
+	// 연결된 애들만 push_back
+	adjacent[0] = { 1, 3 }; // 0번에서 1번과 3번을 연결 (초기값 설정)
+	adjacent[1] = { 0, 2, 3 }; 
+	adjacent[3] = { 4 };
+	adjacent[5] = { 4 };
+
+	// 0번에서 3번이 연결되어 있는지 확인
+	bool connected = false;
+
+	int size = adjacent[0].size();
+	for (int i = 0; i < size; i++)
+	{
+		int vertex = adjacent[0][i];
+		if (vertex == 3)
 		{
-			int left = 2 * now + 1;
-			int right = 2 * now + 2;
-
-			// 리프에 도달한 경우
-			if (left >= (int)_heap.size())
-				break;
-
-			int next = now;
-			// 왼쪽 비교
-			if (_heap[next] < _heap[left])
-				next = left;
-
-			// 둘 중 승자를 오른쪽과 비교
-			if (right < _heap.size() and _heap[next] < _heap[right])
-				next = right;
-
-			// 왼쪽 / 오른쪽 둘 다 현재 값보다 작으면 종료
-			if (next == now)
-				break;
-
-			::swap(_heap[now], _heap[next]);
-			now = next;
+			connected = true;
 		}
 	}
+}
 
-	// O(1)
-	T& top()
-	{
-		return _heap[0];
-	}
+// 만약 정점이 100개라면?
+// - 지하철 노선도 -> 서로 드문 드문 연결 -> 인접 리스트
+// - 페이스북 친구 -> 서로 빽빽하게 연결 -> 인접 행렬
+// 인접리스트 == 연결리스트와 비슷 / 인접 행렬 == 벡터와 비슷
 
-	// O(1)
-	bool empty()
+// 인접 행렬
+void CreateGraph_3()
+{
+	struct Vertex
 	{
-		return _heap.empty();
-	}
-private:
-	vector<T> _heap;
-	Predicate _predicate; // 조건을 판별해주는 걸 객체로 생성
-};
+		int data;
+	};
+
+	vector<Vertex> v(6);
+
+	// 연결된 목록을 행렬로 관리 
+	// [X][O][X][O][X][X]
+	// [O][X][O][O][X][X]
+	// [X][X][X][X][X][X]
+	// [X][X][X][X][O][X]
+	// [X][X][X][X][X][X]
+	// [X][X][X][X][O][X]
+
+	// 6행 6열의 기본값이 false인 행렬 생성
+	vector<vector<bool>> adjacent(6, vector<bool>(6, false));
+
+	// adjacent[from][to] 
+	// 행렬을 이용한 그래프 표현
+	// 메모리 소모가 심하지만, 빠른 접근
+	adjacent[0][1] = true; // 서로 연결된 애는 true로 변경
+	adjacent[0][3] = true;
+	adjacent[1][0] = true;
+	adjacent[1][2] = true;
+	adjacent[1][3] = true;
+	adjacent[3][4] = true;
+	adjacent[5][4] = true;
+
+	// 0번과 3번이 연결되어 있는지 확인
+	bool connected = adjacent[0][3];
+
+	// 가중치 그래프 응용
+	vector<vector<int>> abjacent2 =
+	{
+		{-1, 15, -1, 35, -1, -1},
+		{15, -1, 5, 10, -1, -1},
+		{-1, 5, -1, -1, -1, -1},
+		{35, 10, -1, -1, 5, -1},
+		{-1, -1, -1, 5, -1, 5},
+		{-1, -1, -1, -1, 5, -1}
+	};
+	// -1은 끊김, 양수는 연결되어 있고 가중치 표현
+}
+// 그래프는 순회가 까다로움, 다음 정점으로 넘어가는 정교한 규칙이 필요
+// -> BFS, DFS
 
 int main()
 {
-	PriorityQueue<int> pq;
-
-	pq.push(10);
-	pq.push(40);
-	pq.push(30);
-	pq.push(50);
-	pq.push(20);
-
-	int value = pq.top();
-	pq.pop();
-
+	
 	return 0;
 }
