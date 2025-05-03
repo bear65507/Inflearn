@@ -3,10 +3,9 @@
 #include <queue>
 using namespace std;
 
-// DFS (Depth First Search) == 시작점으로 기준으로 얼마나 깊이 들어가는가
-// DFS = 재귀함수, 트리와 다르게 양방향으로 이동할 수 있음을 고려 = 또는 스택으로 구현
-// BFS (Breath First Search) 너비
-// BFS = 큐
+// 다익스트라 = BFS + 가중치(작을수록 우선순위 높다)
+// 예약 시스템에서 등록한 모든 애들 중에서 점수가 가장 좋은 애 먼저 꺼냄
+// 다익스트라 = 우선순위 큐
 
 struct Vertex
 {
@@ -16,111 +15,89 @@ struct Vertex
 vector<Vertex> vertices;
 vector<vector<int>> adjacent;
 
-// 내가 방문한 목록(DFS)
-vector<bool> visited;
-
-// 내가 발견한 목록(BFS)
-vector<bool> discovered;
-
 void CreateGraph()
 {
 	vertices.resize(6);
-
-	
-	// 인접 리스트
-	/*
-	adjacent = vector<vector<int>>(6);
-	adjacent[0] = { 1, 3 };
-	adjacent[1] = { 0, 2, 3 };
-	adjacent[3] = { 4 };
-	adjacent[5] = { 4 };
-	*/
-
-	// 인접 행렬
-	adjacent = vector<vector<int>>
-	{
-		{0, 1, 0, 1, 0, 0},
-		{1, 0, 1, 1, 0, 0},
-		{0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 1, 0},
-		{0, 0, 0, 0, 0, 0},
-		{0, 0, 0, 0, 1, 0}
-	};
+	adjacent = vector<vector<int>>(6, vector<int>(6, -1));
+	adjacent[0][1] = adjacent[1][0] = 15;
+	adjacent[0][3] = adjacent[3][0] = 35;
+	adjacent[1][2] = adjacent[2][1] = 5;
+	adjacent[1][3] = adjacent[3][1] = 10;
+	adjacent[3][4] = adjacent[4][3] = 5;
+	adjacent[5][4] = adjacent[4][5] = 5;
 }
 
-// BFS의 시간복잡도는 DFS와 동일
-void Bfs(int here) // 가장 먼저 발견한 것을 먼저 방문, 선입선출과 비슷
+struct VertexCost
 {
-	// ex) 누구에 의해서 발견되었는지?
-	vector<int> parent(6, -1);
-	// ex) 시작점에서 얼만큼 떨어져 있는지?
-	vector<int> dist(6, -1);
+	VertexCost(int cost, int vertex) : cost(cost), vertex(vertex) { }
 
-
-	queue<int> q;
-	// 예약 시스템 : 데이터 한 번 넣음
-	q.push(here);
-	discovered[here] = true;
-	// 시작점으로 초기화
-	parent[here] = here;
-	dist[here] = 0;
-
-	while (q.empty() == false) // 스캔이 다 끝날 때까지
+	bool operator<(const VertexCost& other) const
 	{
-		// 큐가 비워질 때까지 데이터 꺼냄
-		here = q.front();
-		q.pop();
+		return cost < other.cost;
+	}
+	bool operator>(const VertexCost& other) const
+	{
+		return cost > other.cost;
+	}
 
-		// 방문 도장 찍기
-		cout << "Visited : " << here << endl;
+	int cost;
+	int vertex;
+};
 
-		// 인접한 정점 탐색
-		// 인접 리스트 버전
-		/*int size = adjacent[here].size();
-		for (int i = 0; i < size; i++)
-		{
-			int there = adjacent[here][i];
-			if (discovered[here]) // 이미 다른 경로에서 발견했다면 무시
-				continue;
+void Dijikstra(int here)
+{
+	priority_queue<VertexCost, vector<VertexCost>, greater<VertexCost>> pq;
+	vector<int> best(6, INT32_MAX);
+	vector<int> parent(6, -1);
 
-			// 방문 예약 (큐의 특징)
-			q.push(there);
-			discovered[there] = true;
-		} */
-		// 인접 행렬 버전
+	pq.push(VertexCost(0, here));
+	best[here] = 0;
+	parent[here] = here;
+
+	while (pq.empty() == false)
+	{
+		// 제일 좋은 후보를 찾는다
+		VertexCost v = pq.top();
+		pq.pop();
+
+		int cost = v.cost;
+		here = v.vertex;
+
+		// 더 짧은 경로를 뒤늦게 찾았다면 스킵
+		if (best[here] < cost)
+			continue;
+
+		// 방문
+		cout << "방문!" << here << endl;
+
+		// 인접 행렬 방식
 		for (int there = 0; there < 6; there++)
 		{
-			if (adjacent[here][there] == 0) // 주위 정점이 없다면 무시
+			// 연결되지 않았다면 스킵
+			if (adjacent[here][there] == -1)
 				continue;
-			if (discovered[there]) // 이미 다른 경로에서 발견했다면 무시
+
+			// 지금까지 가려는 제일 좋은 비용 + 추가적으로 가야될 비용 
+			int nextCost = best[here] + adjacent[here][there]; 
+			// 더 좋은 경로를 과거에 찾았으면 스킵
+			if (nextCost >= best[there])
 				continue;
-			
-			// 방문 예약
-			q.push(there);
-			discovered[there] = true;
-			//
-			parent[there] = here;
-			dist[there] = dist[here] + 1; // 이전 좌표에서 1을 더함
+
+			// 지금까지 찾은 경로중에서는 최선의 수치 = 갱신
+			best[there] = nextCost;
+			parent[there] = here; // 나중에 갱신될 수 있음
+			pq.push(VertexCost(nextCost, there));
+				
 		}
 	}
-}
 
-void BfsAll()
-{
-	discovered = vector<bool>(6, false);
-
-	for (int i = 0; i < 6; i++)
-		if (discovered[i] == false)
-			Bfs(i);
 }
 
 int main()
 {
 	CreateGraph();
 
-	discovered = vector<bool>(6, false);
-	Bfs(0);
+	Dijikstra(0);
 
-	//BfsAll();
 	return 0;
 }
