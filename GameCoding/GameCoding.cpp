@@ -2,68 +2,78 @@
 #include <vector>
 using namespace std;
 
-// auto
-
-class Knight
+class Iterator
 {
+public:
+	Iterator() : _data(nullptr) { }
+	Iterator(int* data) : _data(data) { }
 
+	bool operator==(const Iterator& other)
+	{
+		return _data == other._data;
+	}
+	bool operator!=(const Iterator& other)
+	{
+		return _data != other._data;
+	}
+
+	void operator++()
+	{
+		_data++;
+	}
+	int& operator*()
+	{
+		return *_data;
+	}
+public:
+	int* _data;
 };
 
-template<typename T>
-void Print(T msg)
+class Inventory
 {
-	cout << msg << endl;
-}
+public:
+	using iterator = Iterator;
+	iterator begin() { return iterator(&_items[0]); }
+	iterator end() { return iterator(&_items[10]); }
+
+	int _items[10] = { 1,2,3,4,5,6,7,8,9,10 };
+};
 
 int main()
 {
-	// C++03 -> 지금 배우고 있는거
-	// C++11 - (Modern C++), 대격변?
-	// C++14
-	// C++17
-	// C++20 - 대격변2
+	// range-based for (☆ 알고 있다면 큰 도움이 됨)
+	// 데이터를 수정하는 것은 되지만, 삽입 삭제는 불가능
 
+	vector<int> v{ 1, 2, 3, 4, 5 };
+
+	for (int i = 0; i < v.size(); i++)
 	{
-		int a = 3;
-		float b = 3.14f;
-		double c = 1.23;
-		Knight* d = new Knight();
-		const char* e = "Rookiss";
+		cout << v[i] << endl;
 	}
 
-
-	// auto
-	// - 장점 : 각 타입마다 타이핑할 필요 없음, 특히 이터레이터
-	// - 단점 : 가독성이 떨어짐
-	//
-	vector<int> v;
-	auto it = v.begin();
-
+	for (auto it = v.begin(); it != v.end(); it++)
 	{
-		auto a = 3;
-		auto b = 3.14f;
-		auto c = 1.23;
-		auto d = new Knight();
-		auto e = "Rookiss";
-
-		// auto는 일종의 조커 카드
-		// 템플릿과 작동 원리가 비슷 (컴파일 타임에 이루어짐)
-
-		Print(1);
-		Print("Rookiss");
-		// 형식 연역 (type deduction)
-		// -> 말이 되도록 추론
-
-		int& ref = a;
-		const int cst = a;
-
-		// auto는 const, &는 때고 추론한다
-		// 따라서 직접 붙여줘야함
-		auto& ref2 = ref;
-		const auto cst2 = cst;
-
+		cout << *it << endl;
 	}
 
+	// ranged-based for, C#에서는 for-each
+	for (int data : v)
+	{
+		cout << data << endl;
+	}
+
+	// 데이터를 바꾸고 싶을 때
+	for (auto&/*int를 auto로 대체*/ data : v)
+	{
+		data = 100;
+	}
+
+	Inventory inventory;
+	// items의 원소를 순회하는 코드
+	for (auto& item : inventory) // 내부적으로는 순회자를 사용한것과 같다
+	{
+		cout << item << endl;
+	}
 
 	return 0;
 }
