@@ -1,62 +1,69 @@
 ﻿#include <iostream>
-#include <list>
+#include <vector>
 using namespace std;
-#include "List.h"
+
+// auto
+
+class Knight
+{
+
+};
+
+template<typename T>
+void Print(T msg)
+{
+	cout << msg << endl;
+}
 
 int main()
 {
-	// 연결 리스트
-	// size (resize)
-	// 삽입/삭제?
-	// - 시작	O(1)
-	// - 중간	O(1) << 위치를 알고 있을 때
-	// - 끝		O(1)
-	// front		O(1)
-	// back		O(1)
-	// push_front		O(1)
-	// push_back		O(1)	
-	// 임의 접근 li[2] - 지원하지 않음
+	// C++03 -> 지금 배우고 있는거
+	// C++11 - (Modern C++), 대격변?
+	// C++14
+	// C++17
+	// C++20 - 대격변2
 
-	list<int> li{ 1, 2, 3, 4, 5 };
-
-	// 순회
-	list<int>::iterator it;
-	for (it = li.begin(); it != li.end(); it++)
 	{
-		int value = *it;
-		// 값 탐색
-		if (value == 3)
-		{
-			break;
-		}
-		cout << value << endl;
-	}
-	if (it != li.end()) // 원하는 값을 찾았을 때
-	{
-
+		int a = 3;
+		float b = 3.14f;
+		double c = 1.23;
+		Knight* d = new Knight();
+		const char* e = "Rookiss";
 	}
 
-	// 순회하면서 삭제하는 경우
-	for (it = li.begin(); it != li.end(); it)
+
+	// auto
+	// - 장점 : 각 타입마다 타이핑할 필요 없음, 특히 이터레이터
+	// - 단점 : 가독성이 떨어짐
+	//
+	vector<int> v;
+	auto it = v.begin();
+
 	{
-		int value = *it;
-		if (value % 2 == 0)
-		{
-			it = li.erase(it); // it은 다음 데이터 위치를 가리킴
-		}
-		else
-			it++;
+		auto a = 3;
+		auto b = 3.14f;
+		auto c = 1.23;
+		auto d = new Knight();
+		auto e = "Rookiss";
+
+		// auto는 일종의 조커 카드
+		// 템플릿과 작동 원리가 비슷 (컴파일 타임에 이루어짐)
+
+		Print(1);
+		Print("Rookiss");
+		// 형식 연역 (type deduction)
+		// -> 말이 되도록 추론
+
+		int& ref = a;
+		const int cst = a;
+
+		// auto는 const, &는 때고 추론한다
+		// 따라서 직접 붙여줘야함
+		auto& ref2 = ref;
+		const auto cst2 = cst;
+
 	}
 
-	// 자체 제작 라이브러리
-	List<int> l;
-	l.AddAtTail(10);
-	l.AddAtTail(20);
-	l.AddAtTail(30);
-	for (List<int>::iterator it = l.begin(); it != l.end(); it++)
-	{
-		int value = *it;
-		cout << value << endl;
-	}
+
 	return 0;
 }
