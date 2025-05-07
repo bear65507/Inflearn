@@ -2,78 +2,57 @@
 #include <vector>
 using namespace std;
 
-class Iterator
+// 이진 탐색 (binary search)
+
+vector<int> numbers;
+
+void BinarySearch(int N)
 {
-public:
-	Iterator() : _data(nullptr) { }
-	Iterator(int* data) : _data(data) { }
+	// 재귀함수 또는 while문으로 접근
+	int left = 0; 
+	int right = numbers.size() - 1; // 시작 인덱스와 끝 인덱스
 
-	bool operator==(const Iterator& other)
+	while (left <= right)
 	{
-		return _data == other._data;
-	}
-	bool operator!=(const Iterator& other)
-	{
-		return _data != other._data;
-	}
+		cout << "탐색 범위 : " << left << "~" << right << endl;
 
-	void operator++()
-	{
-		_data++;
-	}
-	int& operator*()
-	{
-		return *_data;
-	}
-public:
-	int* _data;
-};
+		int mid = (left + right) / 2; // 중간 위치 (소수점 버림)
 
-class Inventory
-{
-public:
-	using iterator = Iterator;
-	iterator begin() { return iterator(&_items[0]); }
-	iterator end() { return iterator(&_items[10]); }
-
-	int _items[10] = { 1,2,3,4,5,6,7,8,9,10 };
-};
+		if (N < numbers[mid]) // N이 중간값보다 작으면, 중간 위치에서 왼쪽을 탐색
+		{
+			cout << N << " < " << numbers[mid] << endl;
+			right = mid - 1;
+		}
+		else if (N > numbers[mid]) // N이 중간값보다 크면, 오른쪽을 탐색
+		{
+			cout << N << " > " << numbers[mid] << endl;
+			left = mid + 1;
+		}
+		else // 값을 찾음
+		{
+			cout << "찾았음!" << endl;
+			break;
+		}
+	}
+}
 
 int main()
 {
-	// range-based for (☆ 알고 있다면 큰 도움이 됨)
-	// 데이터를 수정하는 것은 되지만, 삽입 삭제는 불가능
+	// [1][8][15][23][32][44][56][63][81][91]
+	// Q) 82가 있는가?
+	// 일일이 스캔(순차탐색) - O(N) 
+	// 
+	// 배열이 정렬되어 있을 시 -> 중간값 체크
+	// 82보다 크면, 왼쪽을 보고 / 82보다 작으면, 오른쪽을 본다
+	// 이진 탐색 = O(log N)
 
-	vector<int> v{ 1, 2, 3, 4, 5 };
+	numbers = { 1, 8, 15, 23, 32, 44, 56, 63, 81, 91 };
+	BinarySearch(28);
 
-	for (int i = 0; i < v.size(); i++)
-	{
-		cout << v[i] << endl;
-	}
-
-	for (auto it = v.begin(); it != v.end(); it++)
-	{
-		cout << *it << endl;
-	}
-
-	// ranged-based for, C#에서는 for-each
-	for (int data : v)
-	{
-		cout << data << endl;
-	}
-
-	// 데이터를 바꾸고 싶을 때
-	for (auto&/*int를 auto로 대체*/ data : v)
-	{
-		data = 100;
-	}
-
-	Inventory inventory;
-	// items의 원소를 순회하는 코드
-	for (auto& item : inventory) // 내부적으로는 순회자를 사용한것과 같다
-	{
-		cout << item << endl;
-	}
+	// 연결 리스트로는 원소에 임의 접근이 안되기 때문에 이진 탐색을 할 수 없음 
+	// 배열로는 중간 위치에 삽입/삭제가 느리다 O(N)
+	// --> 데이터가 유동적으로 변화하는 환경에서는 이진 탐색이 불리
+	// --> 대안 : 트리 구조
 
 	return 0;
 }
