@@ -4,58 +4,122 @@
 #include <unordered_map>
 using namespace std;
 
-// (☆)메모리를 팔아서 (CPU)성능을 얻겠다
+enum class ObjectType // dynamic_cast 대신 사용
+{
+	Player,
+	Monster,
+	Projectile,
+	Env
+};
 
-// ex) 아파트 우편함
-// [201][202][203][204]
-// [101][102][103][104]
-// 203호 우편 --> 바로 접근 = O(1)
+class Object
+{
+public:
+	Object(ObjectType type) : _type(type) {}
+	virtual ~Object() { } // virtual(가상함수)가 없으면 RTTI가 없어서 가상함수 테이블을 못찾음
 
-// 키를 알면 빠르게 찾을 수 있다 O(1)
-// -> hash 기법
-// 보안 업계에서 주로 사용, 비밀번호를 해시 알고리즘으로 암호화해서 저장,
-// 해시값만 알고는 비밀번호를 알 수 없다(단방향)
-// == 단방향으로 유니크한 키를 꺼내는 기법
+	ObjectType GetObjectType() { return _type; }
+	// 시작
+	virtual void Init()
+	{
 
-// 복잡한 값이라도 해시를 취해서 키값을 추출한다음 특정 칸(버킷)에 데이터를 넣어준다
-// ex) 아이디 % 10000 = 키
-// [1][2][3]...[10000]
-// hash(100002324024120002) -> 2 
-// -> 2번째 칸(버킷)에 저장
+	}
+	// 업데이트
+	virtual void Update()
+	{
 
+	}
+public:
+	int _id;
+	ObjectType _type;
+};
+
+class Player : public Object
+{
+public:
+	Player() : Object(ObjectType::Player) { } // 상위 클래스의 생성자로 초기화
+	Player(int id) : Object(id) { }
+};
+
+class Monster : public Object
+{
+public:
+	Monster() : Object(ObjectType::Monster) { }
+};
+
+class Projectile : public Object 
+{
+	Projectile() : Object(ObjectType::Projectile) { }
+};
+
+
+class Field
+{
+public:
+	static Field* GetInstance() // 싱글톤
+	{
+		static Field field;
+		return &field;
+	}
+
+	void Update() {
+		for (auto& item : _objects) // 모든 _objects 객체들을 순회
+		{
+			Object* obj = item.second;
+			obj->Update();
+		}
+	}
+
+	void Add(Object* player)
+	{
+		_objects.insert(make_pair(player->_id, player));
+	}
+
+	void Remove(int id)
+	{
+		_objects.erase(id);
+	}
+
+	Object* Get(int id)
+	{
+		auto findit = _objects.find(id);
+		if (findit != _objects.end())
+			return findit->second;
+
+		return nullptr;
+	}
+
+private:
+	//unordered_map<int, Player*> _players;
+	//unordered_map<int, Monster*> _monsters;
+	//unordered_map<int, Projectile*> _monsters;
+	//unordered_map<int, Env*> _monsters;
+
+	// 상위 클래스를 만들어 한곳에서 관리할 수도 있음
+	unordered_map<int, Object*> _objects;
+};
 
 int main()
 {
-	// hash_map
-	// 탐색의 시간복잡도 : O(1)
-	unordered_map<int, int> um;
+	/* 참고 */
+	// Heap영역 [header(사이즈 정보, 데이터 정보][]
+	int* ptr = new int[1000]; 
+	delete[] ptr; // 데이터를 삭제할 때 몇 바이트인지 어떻게 아는가? --> Heap영역의 헤더 참고 
 
-	// 삽입/삭제, 탐색, 순회가 map과 비슷
-	// 삽입
-	um.insert(make_pair(10, 100));
-	um[20] = 200;
-
-	// 찾기
-	auto findit = um.find(10);
-	if (findit != um.end())
+	// 1번 아이디가 플레이어인지
+	// 방법 1 : enum
+	Field::GetInstance()->Add(new Player(1));
+	Object* obj = Field::GetInstance()->Get(1);
+	if (obj and obj->GetObjectType() == ObjectType::Player)
 	{
-		cout << "찾음" << endl;
-	}
-	else
-	{
-		cout << "없음" << endl;
+		Player* player = static_cast<Player*>(obj);
 	}
 
-	// 삭제
-	um.erase(10);
-	//um.erase(findit);
-
-	// 순회
-	for (auto it = um.begin(); it != um.end(); it++)
+	// 방법 2 : dynamic_cast<>
+	Player* player = dynamic_cast<Player*>(Field::GetInstance()->Get(1)); // 가상함수 필요
+	if (player)
 	{
-		int key = it->first;
-		int value = it->second;
-	}
 
+	}
 	return 0;
 }
