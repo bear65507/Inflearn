@@ -1,125 +1,156 @@
 ﻿#include <iostream>
 #include <vector>
-#include <map>
-#include <unordered_map>
+#include <algorithm>
 using namespace std;
 
-enum class ObjectType // dynamic_cast 대신 사용
-{
-	Player,
-	Monster,
-	Projectile,
-	Env
-};
-
-class Object
-{
-public:
-	Object(ObjectType type) : _type(type) {}
-	virtual ~Object() { } // virtual(가상함수)가 없으면 RTTI가 없어서 가상함수 테이블을 못찾음
-
-	ObjectType GetObjectType() { return _type; }
-	// 시작
-	virtual void Init()
-	{
-
-	}
-	// 업데이트
-	virtual void Update()
-	{
-
-	}
-public:
-	int _id;
-	ObjectType _type;
-};
-
-class Player : public Object
-{
-public:
-	Player() : Object(ObjectType::Player) { } // 상위 클래스의 생성자로 초기화
-	Player(int id) : Object(id) { }
-};
-
-class Monster : public Object
-{
-public:
-	Monster() : Object(ObjectType::Monster) { }
-};
-
-class Projectile : public Object 
-{
-	Projectile() : Object(ObjectType::Projectile) { }
-};
-
-
-class Field
-{
-public:
-	static Field* GetInstance() // 싱글톤
-	{
-		static Field field;
-		return &field;
-	}
-
-	void Update() {
-		for (auto& item : _objects) // 모든 _objects 객체들을 순회
-		{
-			Object* obj = item.second;
-			obj->Update();
-		}
-	}
-
-	void Add(Object* player)
-	{
-		_objects.insert(make_pair(player->_id, player));
-	}
-
-	void Remove(int id)
-	{
-		_objects.erase(id);
-	}
-
-	Object* Get(int id)
-	{
-		auto findit = _objects.find(id);
-		if (findit != _objects.end())
-			return findit->second;
-
-		return nullptr;
-	}
-
-private:
-	//unordered_map<int, Player*> _players;
-	//unordered_map<int, Monster*> _monsters;
-	//unordered_map<int, Projectile*> _monsters;
-	//unordered_map<int, Env*> _monsters;
-
-	// 상위 클래스를 만들어 한곳에서 관리할 수도 있음
-	unordered_map<int, Object*> _objects;
-};
-
+/*
+	find()
+	find_if()
+	count_if()
+	all_of()
+	any_of()
+	none_of()
+	for_each()
+	remove_if()
+*/
 int main()
 {
-	/* 참고 */
-	// Heap영역 [header(사이즈 정보, 데이터 정보][]
-	int* ptr = new int[1000]; 
-	delete[] ptr; // 데이터를 삭제할 때 몇 바이트인지 어떻게 아는가? --> Heap영역의 헤더 참고 
+	vector<int> v;
 
-	// 1번 아이디가 플레이어인지
-	// 방법 1 : enum
-	Field::GetInstance()->Add(new Player(1));
-	Object* obj = Field::GetInstance()->Get(1);
-	if (obj and obj->GetObjectType() == ObjectType::Player)
+	for (int i = 0; i < 100; i++)
 	{
-		Player* player = static_cast<Player*>(obj);
+		int n = rand() % 100;
+		v.push_back(n);
 	}
 
-	// 방법 2 : dynamic_cast<>
-	Player* player = dynamic_cast<Player*>(Field::GetInstance()->Get(1)); // 가상함수 필요
-	if (player)
+	// Q1) 특정 숫자가 있는지? => std::find()
 	{
+		// 기존에 쓰던 방법
+		int number = 50;
 
+		vector<int>::iterator it;
+		for (it = v.begin(); it != v.end(); it++)
+		{
+			int value = *it;
+			if (value == number)
+			{
+				break;
+			}
+		}
+		if (it != v.end())
+		{
+			// TODO
+		}
+
+		// algorithm의 find() 이용
+		auto it = std::find(v.begin(), v.end(), number);
+		if (it == v.end())
+			cout << "못찾음" << endl;
+		else
+			cout << "찾음" << endl;
 	}
+
+	// Q2) 11로 나뉘는 숫자가 있는지? => std::find_if()
+	{
+		// 기존 방법
+		int div = 11;
+		vector<int>::iterator it;
+		for (it = v.begin(); it != v.end(); it++)
+		{
+			int value = *it;
+			if (value % div == 0)
+			{
+				break;
+			}
+		}
+
+		/* -------------------------- */
+		struct CanDivideBy11 // 함수자(함수처럼 동작함)
+		{
+			bool operator()(int n)
+			{
+				return n % 11 == 0;
+			}
+		};
+		// find_if(), 3번째 인자는 predicate, 판별식이 들어감
+		auto it = std::find_if(v.begin(), v.end(), CanDivideBy11()); 
+		if (it == v.end())
+			cout << "못찾음" << endl;
+		else
+			cout << "찾음" << endl;
+	}
+
+	// Q3) 홀수인 숫자 개수는 몇개? => std::count_if()
+	{
+		// 기존 방식
+		int count = 0;
+		for (auto it = v.begin(); it != v.end(); it++)
+		{
+			if (*it % 2 != 0)
+				count++;
+		}
+
+		/* ------------------------- */
+		struct IsOdd
+		{
+			bool operator()(int n)
+			{
+				return n % 2 != 0;
+			}
+		};
+		// count_if(), 마찬가지로 3번째 인자에는 판별식
+		int n = std::count_if(v.begin(), v.end(), IsOdd());
+
+		// 모든 데이터가 홀수인가?
+		bool b1 = std::all_of(v.begin(), v.end(), IsOdd());
+		// 홀수인 데이터가 하나라도 있는가?
+		bool b2 = std::any_of(v.begin(), v.end(), IsOdd());
+		// 모든 데이터가 홀수가 아닌가?
+		bool b3 = std::none_of(v.begin(), v.end(), IsOdd());
+	}
+
+	// Q4) 벡터에 있는 모든 숫자들에게 3을 곱해달라 => std::for_each()
+	{
+		// 기존 방식
+		for (int i = 0; i < v.size(); i++)
+			v[i] *= 3;
+
+		/* ------------------------------- */
+		struct MultiplyBy3
+		{
+			void operator()(int& n)
+			{
+				n *= 3;
+			}
+		};
+		std::for_each(v.begin(), v.end(), MultiplyBy3());
+	}
+
+	// Q5) 홀수인 데이터를 일괄 삭제 => [std::remove_it(), erase](☆)
+	{
+		// 기존 방식
+		for (auto it = v.begin(); it != v.end(); it)
+		{
+			if (*it % 2 != 0)
+				it = v.erase(it);
+			else
+				it++;
+		}
+
+		/* ---------------------------- */
+		struct IsOdd
+		{
+			bool operator()(int n)
+			{
+				return n % 2 != 0;
+			}
+		};
+		// remove_if를 사용할 때 주의할점 : 
+		// 삭제할 원소는 날리고, 아닌 원소는 남기는데 같은 벡터에다 작업함
+		// 1 4 3 5 8 2 --> 4 8 2 5 8 2 == 뒷부분 5 8 2를 남김
+		auto it = std::remove_if(v.begin(), v.end(), IsOdd());
+		v.erase(it, v.end()); // remove_if와 erase는 세트로 생각
+	}
+
 	return 0;
 }
