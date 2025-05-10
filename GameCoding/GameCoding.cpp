@@ -3,154 +3,92 @@
 #include <algorithm>
 using namespace std;
 
-/*
-	find()
-	find_if()
-	count_if()
-	all_of()
-	any_of()
-	none_of()
-	for_each()
-	remove_if()
-*/
+enum class ItemType
+{
+	None,
+	Armor,
+	Weapon,
+	Jewelry,
+	Consumable,
+};
+
+enum class Rarity
+{
+	Common,
+	Rare,
+	Unique
+};
+
+class Item
+{
+public:
+	Item() {}
+	Item(int itemid, Rarity rarity, ItemType type) : _itemid(itemid), _rarity(rarity), _type(type) { }
+
+public:
+	int _itemid = 0;
+	Rarity _rarity = Rarity::Common;
+	ItemType _type = ItemType::None;
+};
+
+class Knight
+{
+public:
+	auto MakeResetHpJob()
+	{
+		auto job = [=]() // 캡쳐할 때 _hp가 아닌 this의 주소값을 복사해서 넘김
+		{				// 복사라고 해서 무조건 안전한거 아님
+				this->_hp = 200;
+		};
+		return job;
+	}
+public:
+	int _hp = 100;
+};
+
 int main()
 {
-	vector<int> v;
+	// Lambda
+	vector<Item> v;
+	v.push_back(Item(1, Rarity::Common, ItemType::Weapon));
+	v.push_back(Item(2, Rarity::Common, ItemType::Armor));
+	v.push_back(Item(3, Rarity::Rare, ItemType::Jewelry));
+	v.push_back(Item(4, Rarity::Unique, ItemType::Weapon));
 
-	for (int i = 0; i < 100; i++)
 	{
-		int n = rand() % 100;
-		v.push_back(n);
-	}
+		// 람다
+		// [](){} == [캡쳐모드](인자){구현부}
+		// 익명함수라 이름이 필요없음
+		// 1회용 함수(STD알고리즘 함수의 predicate 만들 때 유용) = 함수 객체와 유사한 부분이 많음
+		auto isUniqueLambda = [](Item& item) { return item._rarity == Rarity::Unique; };
 
-	// Q1) 특정 숫자가 있는지? => std::find()
-	{
-		// 기존에 쓰던 방법
-		int number = 50;
-
-		vector<int>::iterator it;
-		for (it = v.begin(); it != v.end(); it++)
+		[](Item& item) -> int // int로 타입을 지정
 		{
-			int value = *it;
-			if (value == number)
-			{
-				break;
-			}
-		}
-		if (it != v.end())
-		{
-			// TODO
-		}
-
-		// algorithm의 find() 이용
-		auto it = std::find(v.begin(), v.end(), number);
-		if (it == v.end())
-			cout << "못찾음" << endl;
-		else
-			cout << "찾음" << endl;
-	}
-
-	// Q2) 11로 나뉘는 숫자가 있는지? => std::find_if()
-	{
-		// 기존 방법
-		int div = 11;
-		vector<int>::iterator it;
-		for (it = v.begin(); it != v.end(); it++)
-		{
-			int value = *it;
-			if (value % div == 0)
-			{
-				break;
-			}
-		}
-
-		/* -------------------------- */
-		struct CanDivideBy11 // 함수자(함수처럼 동작함)
-		{
-			bool operator()(int n)
-			{
-				return n % 11 == 0;
-			}
+				return item._rarity == Rarity::Unique;
 		};
-		// find_if(), 3번째 인자는 predicate, 판별식이 들어감
-		auto it = std::find_if(v.begin(), v.end(), CanDivideBy11()); 
-		if (it == v.end())
-			cout << "못찾음" << endl;
-		else
-			cout << "찾음" << endl;
+
+		std::find_if(v.begin(), v.end(), isUniqueLambda);
+
+		// 람다함수안의 []안에 =, & --> 함수 밖에 있는 값을 가져옴
+		// 기본 캡쳐 모드
+		// = 복사, 복사한 값이 영구적으로 고정
+		// & 참조, 원본과 동일한 값을 들고 있음
+		int wantedId = 2;
+		[=](Item& item) {return item._itemid == wantedId; };
+
+		// 단일 변수마다 캡쳐모드
+		[&wantedId](Item& item) {return item._itemid == wantedId; };
+
+		std::find_if(v.begin(), v.end(), [&wantedId](Item& item) {return item._itemid == wantedId; });
+
 	}
 
-	// Q3) 홀수인 숫자 개수는 몇개? => std::count_if()
-	{
-		// 기존 방식
-		int count = 0;
-		for (auto it = v.begin(); it != v.end(); it++)
-		{
-			if (*it % 2 != 0)
-				count++;
-		}
+	// 람다함수의 캡쳐가 참조값을 들고 있을 땐 주소값이 유효한지 체크
+	Knight* k = new Knight();
+	k->_hp = 100;
+	auto job = k->MakeResetHpJob();
 
-		/* ------------------------- */
-		struct IsOdd
-		{
-			bool operator()(int n)
-			{
-				return n % 2 != 0;
-			}
-		};
-		// count_if(), 마찬가지로 3번째 인자에는 판별식
-		int n = std::count_if(v.begin(), v.end(), IsOdd());
-
-		// 모든 데이터가 홀수인가?
-		bool b1 = std::all_of(v.begin(), v.end(), IsOdd());
-		// 홀수인 데이터가 하나라도 있는가?
-		bool b2 = std::any_of(v.begin(), v.end(), IsOdd());
-		// 모든 데이터가 홀수가 아닌가?
-		bool b3 = std::none_of(v.begin(), v.end(), IsOdd());
-	}
-
-	// Q4) 벡터에 있는 모든 숫자들에게 3을 곱해달라 => std::for_each()
-	{
-		// 기존 방식
-		for (int i = 0; i < v.size(); i++)
-			v[i] *= 3;
-
-		/* ------------------------------- */
-		struct MultiplyBy3
-		{
-			void operator()(int& n)
-			{
-				n *= 3;
-			}
-		};
-		std::for_each(v.begin(), v.end(), MultiplyBy3());
-	}
-
-	// Q5) 홀수인 데이터를 일괄 삭제 => [std::remove_it(), erase](☆)
-	{
-		// 기존 방식
-		for (auto it = v.begin(); it != v.end(); it)
-		{
-			if (*it % 2 != 0)
-				it = v.erase(it);
-			else
-				it++;
-		}
-
-		/* ---------------------------- */
-		struct IsOdd
-		{
-			bool operator()(int n)
-			{
-				return n % 2 != 0;
-			}
-		};
-		// remove_if를 사용할 때 주의할점 : 
-		// 삭제할 원소는 날리고, 아닌 원소는 남기는데 같은 벡터에다 작업함
-		// 1 4 3 5 8 2 --> 4 8 2 5 8 2 == 뒷부분 5 8 2를 남김
-		auto it = std::remove_if(v.begin(), v.end(), IsOdd());
-		v.erase(it, v.end()); // remove_if와 erase는 세트로 생각
-	}
-
+	delete k;
+	job(); // 이미 날라간 메모리에 접근하게 됨
 	return 0;
 }
