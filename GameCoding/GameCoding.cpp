@@ -1,94 +1,134 @@
 ﻿#include <iostream>
 #include <vector>
+#include <queue>
 #include <algorithm>
 using namespace std;
 
-enum class ItemType
+// 거품 정렬 : O(N^2)
+void BobbleSort(vector<int>& v)
 {
-	None,
-	Armor,
-	Weapon,
-	Jewelry,
-	Consumable,
-};
+	const int n = v.size();
 
-enum class Rarity
-{
-	Common,
-	Rare,
-	Unique
-};
-
-class Item
-{
-public:
-	Item() {}
-	Item(int itemid, Rarity rarity, ItemType type) : _itemid(itemid), _rarity(rarity), _type(type) { }
-
-public:
-	int _itemid = 0;
-	Rarity _rarity = Rarity::Common;
-	ItemType _type = ItemType::None;
-};
-
-class Knight
-{
-public:
-	auto MakeResetHpJob()
+	for (int i = 0; i < n - 1; i++)
 	{
-		auto job = [=]() // 캡쳐할 때 _hp가 아닌 this의 주소값을 복사해서 넘김
-		{				// 복사라고 해서 무조건 안전한거 아님
-				this->_hp = 200;
-		};
-		return job;
+		for (int j = 0; j < n - 1 - i; j++)
+		{
+			if (v[j] > v[j + 1])
+			{
+				int temp = v[j];
+				v[j] = v[j + 1];
+				v[j + 1] = temp;
+
+				// swap(v[j], v[j + 1]);
+			}
+		}
 	}
-public:
-	int _hp = 100;
-};
+}
+
+// 선택 정렬 : O(N^2)
+void SelectionSort(vector<int>& v)
+{
+	const int n = v.size();
+	for (int i = 0; i < n - 1; i++)
+	{
+		int bestidx = i;
+		for (int j = i + 1; j < n; j++)
+		{
+			if (v[j] < v[bestidx])
+				bestidx = j;
+		}
+		if (i != bestidx)
+			swap(v[i], v[bestidx]);
+	}
+}
+
+// 힙 정렬 : O(Nlog N)
+void HeapSort(vector<int>& v)
+{
+	priority_queue<int, vector<int>, greater<int>> pq;
+	for (int num : v) // 벡터의 원소들을 우선순위 큐에 넣음 (정렬된 상태로 들어감)
+		pq.push(num);
+
+	v.clear();
+	while (pq.empty() == false)
+	{
+		v.push_back(pq.top()); // 다시 벡터에 정렬된 원소들을 넣음
+		pq.pop();
+	}
+}
+
+// 병합정렬 : O(Nlog N)
+// 분할 정복 (Divide and Conquer) 알고리즘
+// - 분할(Divide)		: 문제를 더 단순하게 분할	: O(log N)
+// - 정복(Conquer)	: 분할된 문제를 해결		: O(N)
+// - 결합(Combine)	: 결과를 취합하여 마무리	: O(Nlog N)
+void MergeResult(vector<int>& v, int left, int mid, int right)
+{
+	int leftidx = left;
+	int rightidx = mid + 1;
+	vector<int> temp;
+
+	while (leftidx <= mid and rightidx <= right)
+	{
+		if (v[leftidx] <= v[rightidx]) // 왼쪽 벡터가 오른쪽보다 작으면
+		{
+			temp.push_back(v[leftidx]); // 왼쪽 먼저 새 벡터에 넣어줌
+			leftidx++;
+		}
+		else
+		{
+			temp.push_back(v[rightidx]);
+			rightidx++;
+		}
+	}
+
+	if (leftidx > mid) // 왼쪽 벡터가 먼저 새 벡터에 다 들어갔을 때
+	{
+		while (rightidx <= right) // 오른쪽 벡터의 남은 원소들을 다 새 벡터에 넣음
+		{
+			temp.push_back(v[rightidx]);
+			rightidx++;
+		}
+	}
+	else
+	{
+		while (leftidx <= left) 
+		{
+			temp.push_back(v[leftidx]);
+			leftidx++;
+		}
+	}
+
+	for (int i = 0; i < temp.size(); i++)
+	{
+		v[left + i] = temp[i];
+	}
+}
+
+void MergeSort(vector<int>& v, int left, int right)
+{
+	if (left >= right) // 분할된 벡터의 원소가 1개일 때
+		return;
+
+	int mid = (left + right) / 2;
+
+	// 절반씩 나눔
+	MergeSort(v, left, mid);
+	MergeSort(v, mid + 1, right);
+
+	MergeResult(v, left, mid, right);
+}
+
 
 int main()
 {
-	// Lambda
-	vector<Item> v;
-	v.push_back(Item(1, Rarity::Common, ItemType::Weapon));
-	v.push_back(Item(2, Rarity::Common, ItemType::Armor));
-	v.push_back(Item(3, Rarity::Rare, ItemType::Jewelry));
-	v.push_back(Item(4, Rarity::Unique, ItemType::Weapon));
+	vector<int> v{ 1, 5, 3, 4, 2 };
 
-	{
-		// 람다
-		// [](){} == [캡쳐모드](인자){구현부}
-		// 익명함수라 이름이 필요없음
-		// 1회용 함수(STD알고리즘 함수의 predicate 만들 때 유용) = 함수 객체와 유사한 부분이 많음
-		auto isUniqueLambda = [](Item& item) { return item._rarity == Rarity::Unique; };
+	// std::sort(v.begin(), v.end()); // std::sort()
+	//BobbleSort(v);
+	//SelectionSort(v);
+	//HeapSort(v);
 
-		[](Item& item) -> int // int로 타입을 지정
-		{
-				return item._rarity == Rarity::Unique;
-		};
-
-		std::find_if(v.begin(), v.end(), isUniqueLambda);
-
-		// 람다함수안의 []안에 =, & --> 함수 밖에 있는 값을 가져옴
-		// 기본 캡쳐 모드
-		// = 복사, 복사한 값이 영구적으로 고정
-		// & 참조, 원본과 동일한 값을 들고 있음
-		int wantedId = 2;
-		[=](Item& item) {return item._itemid == wantedId; };
-
-		// 단일 변수마다 캡쳐모드
-		[&wantedId](Item& item) {return item._itemid == wantedId; };
-
-		std::find_if(v.begin(), v.end(), [&wantedId](Item& item) {return item._itemid == wantedId; });
-
-	}
-
-	// 람다함수의 캡쳐가 참조값을 들고 있을 땐 주소값이 유효한지 체크
-	Knight* k = new Knight();
-	k->_hp = 100;
-	auto job = k->MakeResetHpJob();
-
-	delete k;
-	job(); // 이미 날라간 메모리에 접근하게 됨
+	MergeSort(v, 0, v.size() - 1);
 	return 0;
 }
