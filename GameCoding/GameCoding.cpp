@@ -119,6 +119,49 @@ void MergeSort(vector<int>& v, int left, int right)
 	MergeResult(v, left, mid, right);
 }
 
+// 퀵 정렬 : 평균적으로 O(Nlog N)
+// 피벗을 잘못 잡으면 최악의 경우 O(N^2)
+int Partition(vector<int>& v, int left, int right) // O(N)
+{
+	// 피벗을 정함
+	int pivot = v[left];
+	int low = left + 1;
+	int high = right;
+
+	while (low <= high) // low가 high보다 왼쪽에 있을 때
+	{
+		while (low <= right and pivot >= v[low])
+		{
+			// low의 값이 pivot보다 작을 때 low를 오른쪽으로 움직임
+			low++; 
+		}
+		while (high >= left + 1 and pivot <= v[high])
+		{
+			// high의 값이 pivot보다 클 때 high를 왼쪽으로 움직임
+			high--;
+		}
+
+		if (low < high)
+			swap(v[low], v[high]); // low와 high가 멈추면, 둘의 위치를 바꿈
+	}
+
+	swap(v[left], v[high]); // 피벗과 high의 값을 바꾸고
+	return high; // 피벗의 위치 반환
+}
+
+void QuickSort(vector<int>& v, int left, int right) // O(log N)
+{
+	if (left > right)
+		return;
+
+	int pivot = Partition(v, left, right); // 피벗 정하기
+
+	// 피벗의 왼쪽 오른쪽을 기준으로 다시 퀵소트
+	QuickSort(v, left, pivot - 1);
+	QuickSort(v, pivot + 1, right);
+
+}
+
 
 int main()
 {
@@ -129,6 +172,7 @@ int main()
 	//SelectionSort(v);
 	//HeapSort(v);
 
-	MergeSort(v, 0, v.size() - 1);
+	//MergeSort(v, 0, v.size() - 1);
+	QuickSort(v, 0, v.size() - 1);
 	return 0;
 }
