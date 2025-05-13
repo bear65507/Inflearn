@@ -1,111 +1,163 @@
 ﻿#include <iostream>
 #include <string>
+#include <unordered_map>
 using namespace std;
 
-class Pet
-{
-
-};
+//class ObjectManager // Use-After-Free 문제를 회피하는 하나의 방법
+//{
+//	Knight* GetObject(int id) // 객체의 id를 가지고 접근
+//	{
+//		return nullptr;
+//	}
+//
+//	unordered_map<int, Knight*> um; // id와 객체를 세트로 관리 -> 해시 맵
+//};
 
 class Knight
 {
 public:
-	Knight()
+	~Knight() {}
+	void Attack()
 	{
-
+		if (_target)
+			_target->_hp = _damage;
 	}
-	~Knight()
-	{
-		if (_pet)
-			delete _pet;
-	}
-	// 복사생성자
-	Knight(const Knight& other)
-	{
+public:
+	int _hp = 100;
+	int _damage = 10;
+	shared_ptr<Knight> _target = nullptr; // 주시 대상
+	int targetid = 0; // 오브젝트 매니저와 아이디를 이용해서 찾기
+};
 
-	}
-	// 복사 대입 연산자
-	void operator=(const Knight& other)
-	{
-		_hp = other._hp;
-		_pet = other._pet; // 동일한 원본 펫을 가리키는 문제
-						 // 같은 메모리를 소멸시키려 하고 있음
+/*--------------------- shared_ptr 구현 ------------------------------ */
 
-		if (other._pet)
+class RefCountBlock // 실시간으로 refCount를 늘리는 작업을 쉽게 하기 위해
+{
+public:
+	int refCount = 1;
+};
+
+template<typename T>
+class SharedPtr // shared_ptr 구현
+{
+public:
+	SharedPtr() {} 
+	SharedPtr(T* ptr) : _ptr(ptr) 
+	{
+		if (ptr) // 관리하고 있는 포인터가 유효하면
 		{
-			_pet = new Pet(*other._pet); // 새로운 펫을 만들어줘서 문제 회피
+			_block = new RefCountBlock(); // refCount를 늘려줌
+			cout << "RefCount: " << _block->refCount << endl;
+		}
+	}
+	// SharedPtr이 복사되어 객체가 다른 객체와 같은 곳을 가리키고 있을 때
+	SharedPtr(const SharedPtr& other) : _ptr(other._ptr), _block(other._block)
+	{
+		if (_ptr)
+		{
+			_block->refCount++;
 		}
 	}
 
-	// 이동 생성자
-	Knight(Knight&& knight) noexcept
+	void operator=(const SharedPtr& other)
 	{
-		_hp = knight._hp;
-		_pet = knight._pet; // 소유권을 이전, 상대방의 펫을 꺼내감
-		knight._pet = nullptr;
+		_ptr = other._ptr;
+		_block = other._block;
+
+		if (_ptr)
+			_block->refCount++;
 	}
-	// 이동 대입 연산자
-	void operator=(Knight&& knight) noexcept
+
+	~SharedPtr()
 	{
-		_hp = knight._hp;
-		_pet = knight._pet; // 소유권을 이전, 상대방의 펫을 꺼내감
-		knight._pet = nullptr;
+		if (_ptr) // 관리하고 있는 포인터가 있었을 때
+		{
+			_block->refCount--;
+
+			// 이제 SharedPtr을 사용하는 포인터가 없을 때
+			if (_block->refCount == 0)
+			{
+				delete _ptr;
+				delete _block;
+				cout << "Delete Data" << endl;
+			}
+		}
 	}
 public:
-	int _hp = 10;
-	Pet* _pet = nullptr;
+	T* _ptr = nullptr; 
+	RefCountBlock* _block = nullptr; // shared_ptr를 참조하는 객체 수 관리
 };
 
-void TestKnight_Copy(Knight knight) // 복사 방식
+void Test(shared_ptr<Knight>& knight)
 {
-	knight._hp = 100; // 원본에는 영향 X
+	// 간혹 함수에 shared_ptr의 참조값을 넘기는 경우가 있는데,
+	// refCount를 증감시키는 비용을 아낄 수 있음
 }
 
-void TestKnight_LValueRef(Knight& knight) // 왼값 참조 방식
+/* ------------------------------------------------------------------------- */
+template<typename T>
+class Wrapper // 래퍼 클래스
 {
-	knight._hp = 100; // 원본(포인터, 주소값)을 넘겨주고 건드릴 수 있음
-}
+public:
+	Wrapper(T* ptr) : _ptr(ptr) {} // 관리해줄 포인터를 받아줌
+	~Wrapper() // 래퍼 클래스가 소멸될 때 관리하고 있던 포인터를 소멸시켜줌
+	{
+		if (_ptr)
+			delete _ptr;
+	}
+public:
+	T* _ptr;
+};
 
-void TestKnight_ConstLValueRef(const Knight& knight) // const가 붙으면 오른값도 받아줄 수 있음
-{
-	// 원본을 넘겨주는데 건드릴 순 없음
-}
-
-void TestKnight_RValueRef(Knight&& knight) // &&는 오른값 참조
-{
-	// 원본을 넘겨주고 원본을 더 이상 사용하지 않음
-}
 
 int main()
 {
-	// C++11 3총사 : auto, lambda, rvalue-ref(오른값 참조)
-	// 왼값(l-value) vs 오른값(r-value)
-	// l-value : 단일식을 넘어서 계속 지속되는 개체
-	// r-value : l-value가 아닌 나머지
-	// 벡터에서 다른 벡터로 이사를 할 때 복사가 아닌 이동을 이용할 수 있음
-	// 소유권 자체를 넘길 때?
+	{
+		Wrapper<Knight> w(new Knight()); // 래퍼 클래스에 나이트를 넣어서 관리
+		// 나이트를 따로 delete 시켜주지 않아도 됨
+	}
+	/*  --------------------------------------------------------------------  */
 
-	int a = 3; 
-	a = 10; // a(식별자)는 단일식(선언부분)을 넘어서도 존재가능 = 왼값
-	// 3 = 10; // 3(리터럴)은 단일식 넘어 존재 불가 = 오른값
-
-	Knight k1;
-	k1._pet = new Pet();
-
-	Knight k2 = k1; // 복사 생성자
-	k2 = k1; // 복사 대입 생성자
-
-	Knight k3;
-	k3 = static_cast<Knight&&>(k1); // k1의 펫을 가져감
-	k3 = std::move(k1); // 위 코드와 같음 (rvalue_cast)
-
-	TestKnight_Copy(k1);
-	TestKnight_LValueRef(k1);
-	TestKnight_ConstLValueRef(Knight()); // 임시 객체(오른값)
-	TestKnight_RValueRef(Knight());
-
-	TestKnight_RValueRef(static_cast<Knight&&>(k1)); // 왼값을 오른값으로 캐스팅
-
+	// 스마트 포인터 : 포인터를 생으로 관리하지 않고 추가적으로 뭔가 만들어줘서 관리
+	// shared_ptr : 비중이 제일 높음
+	// weak_ptr
+	// unique_ptr
 	
+	// shared_ptr = 내부적으로 refCount를 추적해서 나를 기억하고 있는 애(포인터)가 몇명인지 추적
+	// 일반 포인터와 사용방법은 같음
+	// shared_ptr을 더 이상 사용하는 포인터가 없을 때(refCount가 0일 때), 비로소 shared_ptr가 소멸
+
+
+	{
+		Knight* k1 = new Knight(); // 클래스긴 하지만 하나의 포인터
+		Knight* k3;
+		k3 = k1; // k3, k1가 같은 주소를 가리키고 있음
+	}
+
+	{
+		// 위의 코드와 의미가 같음
+
+		SharedPtr<Knight> k1(new Knight());
+		//SharedPtr<Knight> k2(new Knight());
+
+		SharedPtr<Knight> k3;
+		k3 = k1; // SharedPtr을 복사, 얕은 복사
+		// 내부적으로는 참조값을 그대로 넘겨줌, 같은 주소를 참조하는 객체가 하나 늘어남
+	}
+
+	/* 
+	k1->_target = k2;
+	delete k2; // ???
+	k1->Attack(); // 접근하면 안되는 메모리 공간에 접근 중, 메모리 오염이 일어남(Use-After-Free)
+	*/
+
+	/*  ----------------------------------------------------------------------------------  */
+
+	// shared_ptr는 생 포인터와 섞어쓸수 없음
+	shared_ptr<Knight> k1(new Knight);
+	shared_ptr<Knight> k2(new Knight);
+	k1->_target = k2; // k2를 기억하고 있는 포인터가 늘어났기 때문에 k2의 refCount가 늘어남
+	// k2가 소멸되어도 k1의 _target은 k2를 기억하고 있음
+
 	return 0;
 }
