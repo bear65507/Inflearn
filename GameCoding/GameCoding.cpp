@@ -2,49 +2,110 @@
 #include <string>
 using namespace std;
 
+class Pet
+{
+
+};
+
+class Knight
+{
+public:
+	Knight()
+	{
+
+	}
+	~Knight()
+	{
+		if (_pet)
+			delete _pet;
+	}
+	// 복사생성자
+	Knight(const Knight& other)
+	{
+
+	}
+	// 복사 대입 연산자
+	void operator=(const Knight& other)
+	{
+		_hp = other._hp;
+		_pet = other._pet; // 동일한 원본 펫을 가리키는 문제
+						 // 같은 메모리를 소멸시키려 하고 있음
+
+		if (other._pet)
+		{
+			_pet = new Pet(*other._pet); // 새로운 펫을 만들어줘서 문제 회피
+		}
+	}
+
+	// 이동 생성자
+	Knight(Knight&& knight) noexcept
+	{
+		_hp = knight._hp;
+		_pet = knight._pet; // 소유권을 이전, 상대방의 펫을 꺼내감
+		knight._pet = nullptr;
+	}
+	// 이동 대입 연산자
+	void operator=(Knight&& knight) noexcept
+	{
+		_hp = knight._hp;
+		_pet = knight._pet; // 소유권을 이전, 상대방의 펫을 꺼내감
+		knight._pet = nullptr;
+	}
+public:
+	int _hp = 10;
+	Pet* _pet = nullptr;
+};
+
+void TestKnight_Copy(Knight knight) // 복사 방식
+{
+	knight._hp = 100; // 원본에는 영향 X
+}
+
+void TestKnight_LValueRef(Knight& knight) // 왼값 참조 방식
+{
+	knight._hp = 100; // 원본(포인터, 주소값)을 넘겨주고 건드릴 수 있음
+}
+
+void TestKnight_ConstLValueRef(const Knight& knight) // const가 붙으면 오른값도 받아줄 수 있음
+{
+	// 원본을 넘겨주는데 건드릴 순 없음
+}
+
+void TestKnight_RValueRef(Knight&& knight) // &&는 오른값 참조
+{
+	// 원본을 넘겨주고 원본을 더 이상 사용하지 않음
+}
 
 int main()
 {
-	// 1) ASCII 코드 -> 영어만 고려
-	// 문자 표현 7bit (0~127)
-	char ch = 'A';
+	// C++11 3총사 : auto, lambda, rvalue-ref(오른값 참조)
+	// 왼값(l-value) vs 오른값(r-value)
+	// l-value : 단일식을 넘어서 계속 지속되는 개체
+	// r-value : l-value가 아닌 나머지
+	// 벡터에서 다른 벡터로 이사를 할 때 복사가 아닌 이동을 이용할 수 있음
+	// 소유권 자체를 넘길 때?
 
-	// 2) ANSI
-	// ASCII + 각국 언어별로 바이트를 늘려 표현
-	// 127번까지는 ASCII, 그 이후부터는 새로운 페이지를 정함
-	// ex) CP949, EUC-KR
-	// 로케일 환경에 따라 문자가 깨질 수도 있음 (동일한 키코드 != 동일한 문자)
+	int a = 3; 
+	a = 10; // a(식별자)는 단일식(선언부분)을 넘어서도 존재가능 = 왼값
+	// 3 = 10; // 3(리터럴)은 단일식 넘어 존재 불가 = 오른값
+
+	Knight k1;
+	k1._pet = new Pet();
+
+	Knight k2 = k1; // 복사 생성자
+	k2 = k1; // 복사 대입 생성자
+
+	Knight k3;
+	k3 = static_cast<Knight&&>(k1); // k1의 펫을 가져감
+	k3 = std::move(k1); // 위 코드와 같음 (rvalue_cast)
+
+	TestKnight_Copy(k1);
+	TestKnight_LValueRef(k1);
+	TestKnight_ConstLValueRef(Knight()); // 임시 객체(오른값)
+	TestKnight_RValueRef(Knight());
+
+	TestKnight_RValueRef(static_cast<Knight&&>(k1)); // 왼값을 오른값으로 캐스팅
+
 	
-	setlocale(LC_ALL, "");
-	cout << "LC_ALL: " << setlocale(LC_ALL, NULL) << endl;
-
-	// 3) 유니코드
-	// 동일 번호 = 동일한 문자 = 동일한 유니코드
-	// 인코딩 방식 (대표적으로 UTF-8, UTF-16)
-	// - UTF8 : 영어(1바이트), 한국어/중국어...(3바이트)'
-	// - UTF16 : 영어(2), 한국어(2), 중국어(2) ...
-
-	// 4) MBCS(Multi Byte Character Set) vs WBCS(Wide Byte Character Set)
-	// - 멀티바이트 집합(MBCS) : 가변 길이 인코딩 (CP949, UTF-8)
-	// - 유니코드 집합(WBCS) : 고정길이 인코딩 (UTF-16)
-
-	// CP949 방식
-	const char* test = "아아아"; // const char*에서 다른 언어가 섞여있으면 2바이트로 동작
-	cout << test << endl;
-
-	// UTF-8
-	auto test2 = u8"가나다라마바사";
-	setlocale(LC_ALL, "en_US.UTF-8");
-	cout << test2 << endl;
-
-	// UFT-16
-	auto test3 = L"아야어요우유으이";
-	wcout << test3 << endl;
-
-	// char, string 말고 다른 버전의 문자열 (w = WBCS)
-	wchar_t ch1 = L'루'; // L로 와이드 바이트라는 걸 표현
-	wstring name = L"루이지";
-	wcout << name << endl;
-
 	return 0;
 }
