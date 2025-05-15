@@ -1,64 +1,71 @@
 ﻿#include <iostream>
-#include <string>
-#include <unordered_map>
+#include <windows.h>
 using namespace std;
 
+// 메모이제이션 (memeoizaion)
+// 캐시를 만들어 저장하고 찾아서 사용한다
+int cache[50][50];
 
-class Knight
+int Combination(int n, int r)
 {
-public:
-	~Knight() {
-		cout << "Knight()" << endl;
-	}
-	void Attack()
-	{
-		// 사용하던 Knight 객체가 날라가지 않았는지 체크
-		if (_target.expired() == false)
-		{
-			// 다시 shared_ptr로 사용 가능
-			shared_ptr<Knight> spr = _target.lock();
-		}
-	}
-public:
-	int _hp = 100;
-	int _damage = 10;
-	weak_ptr<Knight> _target; 
-};
+	// 기저 조건
+	if (r == 0 or n == r)
+		return 1;
 
+	// 이미 답을 구한 적 있으면 바로 반환
+	int& ret = cache[n][r]; // 참조값으로 들고 있는게 나음
+	if (ret != -1)
+		return ret;
+
+	return ret = Combination(n - 1, r - 1) + Combination(n - 1, r);
+}
+
+/* 인챈트 문제 
+	+0 집행검
+	무기 강화 주문서 -> +1, +2, +3 중 하나
+	
+	+9 집행검이 뜨는 경우의 수는?
+	ex) +1 +2 +3 ... +9
+	ex) +3 +6 +9
+	ex) +1 +3 +4 ... +9
+*/
+
+int N = 9;
+int cache2[100];
+
+// [+num]부터 시작해서, [+N]까지 가는 경우의 수
+int Enchant(int num)
+{
+	// 기저 조건
+	if (num > N)
+		return 0;
+	if (num == N)
+		return 1;
+	// 캐시
+	int& ret = cache2[num];
+	if (ret != -1)
+		return ret;
+	// 조건 : 0강부터 시작해서 +1, +2, +3강씩 강화시키고, 9강이 되는 횟수를 구함
+	return ret = Enchant(num + 1) + Enchant(num + 2) + Enchant(num + 3);
+}
 
 int main()
 {
-	{
-		shared_ptr<Knight> k1(new Knight);
-		shared_ptr<Knight> k2(new Knight);
+	/*
+	::memset(cache, -1, sizeof(cache)); // 캐시 배열을 -1로 초기화
 
-		// 스마트 포인터(shared_ptr)의 refCount가 0이 될 때 객체도 소멸
-		k1->_target = k2;
+	__int64 start = GetTickCount64();
 
-		// 서로 바라보고 있으면 refCount가 낮아지지 않는 문제 (사이클 문제)
-		// 메모리 누수 발생 (shared_ptr 자체로는 해결 불가)
-		k2->_target = k1;
-	}
+	int lotto = Combination(45, 6);
 
-	// weak_ptr : shared_ptr와 같이 사용(의존적임)
-	//	- shared_ptr의 사이클 문제를 해결하기 위해 만들어짐
+	__int64 end = GetTickCount64();
 
-	// weak_ptr : refCount를 shared_ptr, weak_ptr가 이중 카운트로 관리
-	// weak_ptr의 카운트가 shared_ptr의 카운트에는 영향을 주지 않음,
-	//	= shared_ptr(어떤 객체를 참조하고 있는 수) / weak_ptr(객체가 소멸되었는지 체크)
-	// weak_ptr의 카운트가 0이 아닌 이상(=객체가 날라가지 않았다면) 카운트 블럭(정보)은 유지
-	// 카운트 블럭이 남아 있다면 shared_ptr로 재사용 가능
+	cout << end - start << "ms" << endl;
+	*/
 
-	/* ------------------------------------------------------------------------------------- */
-
-	// unique_ptr
-	// 하나만 존재하여야 하는 포인터, 복사 기능을 막아놓음
-
-	unique_ptr<Knight> k1(new Knight());
-	// unique_ptr<Knight> k2 = k1;
-
-	// 오른값 참조로 k1을 이동시키는건 가능
-	unique_ptr<Knight> k2 = std::move(k1);
+	memset(cache2, -1, sizeof(cache2));
+	int ret = Enchant(0);
+	cout << ret << endl;
 
 	return 0;
 }
